@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
 import { db } from "../database/dtabase.connection.js";
+import bcrypt from "bcryptjs"
 
 export async function signup(req, res) {
     const { name, email, password } = req.body
