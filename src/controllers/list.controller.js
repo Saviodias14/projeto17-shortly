@@ -33,7 +33,7 @@ export async function getRanking(req, res) {
           FROM urls
           GROUP BY "userId"
         ) total ON u.id = total."userId"
-        ORDER BY total."visitCount" DESC
+        ORDER BY COALESCE(total."visitCount", 0) DESC
         LIMIT 10;`)
         res.status(200).send(result.rows)
 
