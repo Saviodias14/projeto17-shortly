@@ -40,12 +40,11 @@ export async function deleteUrl(req, res) {
     const { id } = req.params
     const userId = res.locals.userId
     try {
-        const result = await db.query(`SELECT urls."userId" FROM urls WHERE id=$1`, [id])
-        if(result.rowCount===0) return res.sendStatus(404)
-        if(result.rows[0].userId!==userId) return res.sendStatus(401)
-        await db.query(`DELETE FROM urls WHERE id=$1`, [id])
+        await urlServer.deleteUrl(id, userId)
         res.sendStatus(204)
     } catch (err) {
+        if(err.message==='Url not found') return res.sendStatus(404)
+        if(err.message==='Unauthorized') return res.sendStatus(401)
         res.status(500).send(err.message)
     }
 }

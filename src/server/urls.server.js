@@ -19,3 +19,10 @@ export async function updateVisitCount(shortUrl){
     if (update.rowCount === 0) throw new Error('Url not found')
     return update.rows[0].url
 }
+
+export async function deleteUrl(id, userId){
+    const result = await urlRepository.getUrl(id)
+    if(result.rowCount===0) throw new Error('Url not found')
+    if(result.rows[0].userId!==userId) throw new Error('Unauthorized')
+    await urlRepository.deleteUrl(id)
+}
