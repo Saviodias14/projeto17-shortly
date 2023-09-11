@@ -1,38 +1,37 @@
 import { db } from "../database/dtabase.connection.js";
-import { nanoid } from "nanoid";
+import * as urlServer from '../server/urls.server.js'
 
 export async function shortUrl(req, res) {
     const { url } = req.body
+    const userId = res.locals.userId
     try {
-        const shortUrl = nanoid(8)
-        const userId = res.locals.userId
-        const result = await db.query(`INSERT INTO urls (url, "shortUrl", "userId")
-                                       VALUES ($1, $2, $3) RETURNING id`, [url, shortUrl, userId])
-        const id = result.rows[0].id
-        res.status(201).send({ id, shortUrl })
+        const result = await urlServer.shortUrl(url, userId)
+        res.status(201).send(result)
     } catch (err) {
         res.status(500).send(err.message)
     }
 }
 
-export function getUrl(req, res) {
-    const { id } = req.params
-    db.query(`SELECT urls.id, urls.url, urls."shortUrl" FROM urls WHERE id=$1`, [id])
-        .then((result) => {
-            if (result.rowCount === 0) return res.sendStatus(404)
-            res.status(200).send(result.rows[0])
-        })
-        .catch((err) => res.status(500).send(err.message))
+export async function getUrl(req, res) {
+    const id = parseInt(req.params.id)
+    try {
+        if(isNaN(id)) res.status(400).send('This id is not valid')
+        const result = await urlServer.getUrl(id)
+        res.status(200).send(result.rows[0])
+    } catch (error) {
+        if(error.message==='Url not found') return res.sendStatus(404)
+        res.status(500).send(error.message)
+    }
 }
 
 export async function getShortUrl(req, res) {
     const { shortUrl } = req.params
     try {
-        const update = await db.query(`UPDATE urls SET "visitCount" = "visitCount"+1 
-                                       WHERE "shortUrl"=$1 RETURNING url`, [shortUrl])
-        if (update.rowCount === 0) return res.sendStatus(404)
-        res.redirect(update.rows[0].url)
+        const result = await urlServer.updateVisitCount(shortUrl)
+        //res.send(result)
+        res.redirect(result)
     } catch (err) {
+        if(err.message==='Url not found') return res.sendStatus(404)
         res.status(500).send(err.message)
     }
 }

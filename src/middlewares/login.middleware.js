@@ -1,5 +1,5 @@
 import { db } from "../database/dtabase.connection.js"
-import bcrypt from "bcryptjs"
+import bcrypt from "bcrypt"
 export async function validatePassword(req, res, next) {
     const { email, password } = req.body
     try {
