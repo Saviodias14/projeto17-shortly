@@ -14,3 +14,7 @@ export async function createToken(id, token) {
     return await db.query(`INSERT INTO tokens ("userId", token)
         VALUES ($1,$2)`, [id, token])
 }
+
+export async function deleteToken(token){
+    return await db.query(`DELETE FROM tokens WHERE token=$1 RETURNING token`, [token])
+}

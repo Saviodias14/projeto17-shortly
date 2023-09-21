@@ -14,3 +14,8 @@ export async function getToken(id) {
     await signRepository.createToken(id, token)
     return token
 }
+
+export async function logout(token){
+    const result = await signRepository.deleteToken(token)
+    return result.rows[0]
+}

@@ -11,6 +11,7 @@ export async function authValidation (req,res, next) {
         if(acesso.rowCount===0) return res.status(401).send("Acesso Inválido")
 
         res.locals.userId = acesso.rows[0].userId
+        res.locals.token = token
 
         next()
 
