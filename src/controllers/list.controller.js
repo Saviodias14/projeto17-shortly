@@ -1,4 +1,4 @@
-import * as listsServer from '../servicelists.service.js'
+import * as listsServer from '../service/lists.service.js'
 
 export async function getInfoUser(req, res) {
     const userId = res.locals.userId
